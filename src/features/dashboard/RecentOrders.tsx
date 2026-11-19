@@ -14,9 +14,12 @@ export default function RecentOrders({ onNavigate }: RecentOrdersProps) {
   return (
     <section className="panel" aria-labelledby="recent-orders-title">
       <div className="panel__header">
-        <h2 id="recent-orders-title" className="panel__title">
-          Recent orders
-        </h2>
+        <div className="panel__heading">
+          <h2 id="recent-orders-title" className="panel__title">
+            Recent orders
+          </h2>
+          <Badge tone="warning">Sample data</Badge>
+        </div>
         <button
           type="button"
           className="link-button"

@@ -23,6 +23,11 @@ const ICON_PATHS: Record<IconName, string> = {
   trendUp: 'M23 6l-9.5 9.5-5-5L1 18 M17 6h6v6',
   trendDown: 'M23 18l-9.5-9.5-5 5L1 6 M17 18h6v-6',
   arrowRight: 'M5 12h14 M12 5l7 7-7 7',
+  lock: 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4',
+  logIn: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4 M10 17l5-5-5-5 M15 12H3',
+  edit: 'M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z',
+  trash:
+    'M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',
 };
 
 interface IconProps {

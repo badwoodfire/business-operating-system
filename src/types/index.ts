@@ -26,7 +26,11 @@ export type IconName =
   | 'close'
   | 'trendUp'
   | 'trendDown'
-  | 'arrowRight';
+  | 'arrowRight'
+  | 'lock'
+  | 'logIn'
+  | 'edit'
+  | 'trash';
 
 export interface NavItem {
   id: ModuleId;
@@ -86,4 +90,81 @@ export interface QuickAction {
   icon: IconName;
   /** Module opened when the action is chosen. */
   target: ModuleId;
+  /** True for actions that create or change data. They are locked in demo mode. */
+  requiresAccount?: boolean;
+}
+
+export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock';
+
+export interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  category: string;
+  /** Selling price in whole currency units. */
+  price: number;
+  /** Units currently on hand. */
+  stock: number;
+  /** Stock at or below this level is shown as "low stock". */
+  reorderLevel: number;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  city: string;
+  orderCount: number;
+  /** Lifetime spend in whole currency units. */
+  totalSpent: number;
+  /** Calendar date in YYYY-MM-DD format. */
+  lastOrderDate: string;
+}
+
+export type PaymentStatus = 'received' | 'pending' | 'overdue';
+
+export interface PaymentRecord {
+  id: string;
+  orderId: string;
+  customerName: string;
+  method: PaymentMethod;
+  amount: number;
+  status: PaymentStatus;
+  /** Calendar date in YYYY-MM-DD format. */
+  date: string;
+}
+
+export type ExpenseCategory =
+  | 'stock'
+  | 'shipping'
+  | 'packaging'
+  | 'marketing'
+  | 'rent'
+  | 'utilities'
+  | 'salaries';
+
+export interface Expense {
+  id: string;
+  description: string;
+  category: ExpenseCategory;
+  amount: number;
+  /** Calendar date in YYYY-MM-DD format. */
+  date: string;
+}
+
+export interface MonthlySales {
+  id: string;
+  label: string;
+  total: number;
+}
+
+export interface ProductSales {
+  id: string;
+  name: string;
+  unitsSold: number;
+}
+
+export interface PaymentMethodShare {
+  method: PaymentMethod;
+  /** Share of sales, in percent. */
+  percent: number;
 }

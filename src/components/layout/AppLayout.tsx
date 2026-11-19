@@ -1,19 +1,24 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { APP_NAME } from '../../config/app';
+import { IS_DEMO_MODE } from '../../config/demo';
 import { NAV_ITEMS, getNavItem } from '../../config/navigation';
 import type { ModuleId } from '../../types';
+import DemoBanner from '../demo/DemoBanner';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
 interface AppLayoutProps {
   activeModule: ModuleId;
   onNavigate: (id: ModuleId) => void;
+  /** Opens the sign-in screen. */
+  onSignIn: () => void;
   children: ReactNode;
 }
 
 export default function AppLayout({
   activeModule,
   onNavigate,
+  onSignIn,
   children,
 }: AppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -52,8 +57,12 @@ export default function AppLayout({
         <Topbar
           isSidebarOpen={isSidebarOpen}
           onMenuClick={() => setIsSidebarOpen(true)}
+          onSignIn={onSignIn}
         />
-        <main className="app-shell__content">{children}</main>
+        <main className="app-shell__content">
+          {IS_DEMO_MODE ? <DemoBanner /> : null}
+          {children}
+        </main>
       </div>
     </div>
   );

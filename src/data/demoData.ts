@@ -8,7 +8,7 @@
 import type { DashboardStat, Order, QuickAction } from '../types';
 
 export const DEMO_DATA_NOTICE =
-  'You are viewing demo data. All names and figures are made up and nothing is saved.';
+  'You are viewing sample data. All names and figures are made up, nothing is saved, and this demo is read-only.';
 
 export const DEMO_STATS: DashboardStat[] = [
   {
@@ -117,6 +117,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
     description: 'Record a new customer order',
     icon: 'orders',
     target: 'orders',
+    requiresAccount: true,
   },
   {
     id: 'add-product',
@@ -124,6 +125,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
     description: 'Add an item to your inventory',
     icon: 'inventory',
     target: 'inventory',
+    requiresAccount: true,
   },
   {
     id: 'add-customer',
@@ -131,6 +133,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
     description: 'Save a new customer profile',
     icon: 'userPlus',
     target: 'customers',
+    requiresAccount: true,
   },
   {
     id: 'record-payment',
@@ -138,6 +141,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
     description: 'Log a payment you received',
     icon: 'payments',
     target: 'payments',
+    requiresAccount: true,
   },
   {
     id: 'log-expense',
@@ -145,6 +149,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
     description: 'Track money you spent',
     icon: 'expenses',
     target: 'expenses',
+    requiresAccount: true,
   },
   {
     id: 'view-reports',

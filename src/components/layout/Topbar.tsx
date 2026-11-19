@@ -5,9 +5,10 @@ import Icon from '../ui/Icon';
 interface TopbarProps {
   isSidebarOpen: boolean;
   onMenuClick: () => void;
+  onSignIn: () => void;
 }
 
-export default function Topbar({ isSidebarOpen, onMenuClick }: TopbarProps) {
+export default function Topbar({ isSidebarOpen, onMenuClick, onSignIn }: TopbarProps) {
   return (
     <div className="topbar">
       <div className="topbar__left">
@@ -25,9 +26,15 @@ export default function Topbar({ isSidebarOpen, onMenuClick }: TopbarProps) {
       </div>
       <div className="topbar__right">
         <Badge tone="warning">Demo data</Badge>
-        <span className="topbar__avatar" aria-hidden="true">
-          DS
-        </span>
+        <button
+          type="button"
+          className="btn btn--secondary topbar__signin"
+          onClick={onSignIn}
+          aria-label="Sign in"
+        >
+          <Icon name="logIn" size={18} />
+          <span className="topbar__signin-text">Sign in</span>
+        </button>
       </div>
     </div>
   );

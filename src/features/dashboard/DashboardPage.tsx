@@ -1,5 +1,5 @@
+import Badge from '../../components/ui/Badge';
 import PageHeader from '../../components/ui/PageHeader';
-import { DEMO_DATA_NOTICE } from '../../data/demoData';
 import type { ModuleId } from '../../types';
 import QuickActions from './QuickActions';
 import RecentOrders from './RecentOrders';
@@ -17,9 +17,10 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
         title="Dashboard"
         description="A quick look at how your store is doing this month."
       />
-      <p className="demo-notice" role="note">
-        {DEMO_DATA_NOTICE}
-      </p>
+      <div className="section-label">
+        <span>This month</span>
+        <Badge tone="warning">Sample data</Badge>
+      </div>
       <StatsGrid />
       <div className="dashboard-grid">
         <RecentOrders onNavigate={onNavigate} />

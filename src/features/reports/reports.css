@@ -1,0 +1,56 @@
+/* Reports: CSS-only bar lists. */
+.reports-stack {
+  display: grid;
+  gap: 20px;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (min-width: 1100px) {
+  .reports-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.bar-list {
+  display: grid;
+  gap: 14px;
+}
+
+.bar-list__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.bar-list__label {
+  min-width: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.bar-list__value {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bar-list__track {
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--color-bg);
+}
+
+.bar-list__bar {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
