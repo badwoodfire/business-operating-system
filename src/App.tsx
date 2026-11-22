@@ -12,6 +12,7 @@ import ReportsPage from './features/reports/ReportsPage';
 import { useActiveModule } from './hooks/useActiveModule';
 import { useLoginRoute } from './hooks/useLoginRoute';
 import ModulePlaceholder from './pages/ModulePlaceholder';
+import { BusinessStoreProvider } from './store/BusinessStore';
 import type { ModuleId } from './types';
 
 interface ModuleViewProps {
@@ -21,23 +22,14 @@ interface ModuleViewProps {
 
 function ModuleView({ moduleId, onNavigate }: ModuleViewProps) {
   switch (moduleId) {
-    case 'dashboard':
-      return <DashboardPage onNavigate={onNavigate} />;
-    case 'orders':
-      return <OrdersPage />;
-    case 'inventory':
-      return <InventoryPage />;
-    case 'customers':
-      return <CustomersPage />;
-    case 'payments':
-      return <PaymentsPage />;
-    case 'expenses':
-      return <ExpensesPage />;
-    case 'reports':
-      return <ReportsPage />;
-    default:
-      // Modules are added above as they are built. Until then, show the roadmap.
-      return <ModulePlaceholder moduleId={moduleId} />;
+    case 'dashboard': return <DashboardPage onNavigate={onNavigate} />;
+    case 'orders': return <OrdersPage />;
+    case 'inventory': return <InventoryPage />;
+    case 'customers': return <CustomersPage />;
+    case 'payments': return <PaymentsPage />;
+    case 'expenses': return <ExpensesPage />;
+    case 'reports': return <ReportsPage />;
+    default: return <ModulePlaceholder moduleId={moduleId} />;
   }
 }
 
@@ -46,18 +38,16 @@ export default function App() {
   const [isLoginRoute, openLogin] = useLoginRoute();
 
   return (
-    <DemoModeProvider onSignIn={openLogin}>
-      {isLoginRoute ? (
-        <LoginPage onBackToDemo={() => navigate(DEFAULT_MODULE)} />
-      ) : (
-        <AppLayout
-          activeModule={activeModule}
-          onNavigate={navigate}
-          onSignIn={openLogin}
-        >
-          <ModuleView moduleId={activeModule} onNavigate={navigate} />
-        </AppLayout>
-      )}
-    </DemoModeProvider>
+    <BusinessStoreProvider>
+      <DemoModeProvider onSignIn={openLogin}>
+        {isLoginRoute ? (
+          <LoginPage onBackToDemo={() => navigate(DEFAULT_MODULE)} />
+        ) : (
+          <AppLayout activeModule={activeModule} onNavigate={navigate} onSignIn={openLogin}>
+            <ModuleView moduleId={activeModule} onNavigate={navigate} />
+          </AppLayout>
+        )}
+      </DemoModeProvider>
+    </BusinessStoreProvider>
   );
 }
