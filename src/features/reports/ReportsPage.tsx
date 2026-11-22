@@ -15,10 +15,13 @@ export default function ReportsPage() {
     <>
       <PageHeader
         title="Reports"
-        description="Understand sales trends and what your customers buy."
+        description="Understand sales trends and payment activity in the sample data."
       />
       <div className="reports-stack">
-        <SamplePanel title="Monthly sales" description="Sales over the last six months.">
+        <SamplePanel
+          title="Monthly sales"
+          description="November is calculated from the listed sample orders; earlier months are illustrative."
+        >
           <BarList
             items={DEMO_MONTHLY_SALES.map((month) => ({
               id: month.id,
@@ -29,17 +32,24 @@ export default function ReportsPage() {
           />
         </SamplePanel>
         <div className="reports-grid">
-          <SamplePanel title="Best-selling products" description="Units sold this month.">
-            <BarList
-              items={DEMO_BEST_SELLERS.map((product) => ({
-                id: product.id,
-                label: product.name,
-                value: product.unitsSold,
-                display: `${formatNumber(product.unitsSold)} units`,
-              }))}
-            />
+          <SamplePanel
+            title="Best-selling products"
+            description="Product-level sales are not included in the current sample order records."
+          >
+            {DEMO_BEST_SELLERS.length > 0 ? (
+              <BarList
+                items={DEMO_BEST_SELLERS.map((product) => ({
+                  id: product.id,
+                  label: product.name,
+                  value: product.unitsSold,
+                  display: `${formatNumber(product.unitsSold)} units`,
+                }))}
+              />
+            ) : (
+              <p>Not enough product-level order data to calculate best sellers yet.</p>
+            )}
           </SamplePanel>
-          <SamplePanel title="Sales by payment method" description="Share of this month's sales.">
+          <SamplePanel title="Sales by payment method" description="Share calculated from the listed payment records.">
             <BarList
               items={DEMO_PAYMENT_SHARES.map((share) => ({
                 id: share.method,
