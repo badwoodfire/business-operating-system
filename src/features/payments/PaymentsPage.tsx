@@ -1,88 +1,18 @@
-import ActionButton from '../../components/demo/ActionButton';
-import RowActions from '../../components/demo/RowActions';
-import Badge from '../../components/ui/Badge';
-import DataTable, { type DataTableColumn } from '../../components/ui/DataTable';
 import PageHeader from '../../components/ui/PageHeader';
-import SamplePanel from '../../components/ui/SamplePanel';
+import RecordManager from '../../components/workspace/RecordManager';
 import SummaryTile from '../../components/ui/SummaryTile';
-import { PAYMENT_METHOD_LABELS } from '../../config/orders';
-import { PAYMENT_STATUS_META } from '../../config/payments';
-import { DEMO_PAYMENTS } from '../../data/demoPayments';
-import type { PaymentRecord, PaymentStatus } from '../../types';
-import { formatCurrency, formatShortDate } from '../../utils/format';
+import { makeId, useBusinessStore } from '../../store/BusinessStore';
+import type { PaymentRecord, PaymentStatus, PaymentMethod } from '../../types';
 
-const COLUMNS: DataTableColumn<PaymentRecord>[] = [
-  { key: 'id', header: 'Payment', strong: true, render: (payment) => payment.id },
-  { key: 'order', header: 'Order', render: (payment) => payment.orderId },
-  { key: 'customer', header: 'Customer', render: (payment) => payment.customerName },
-  { key: 'date', header: 'Date', render: (payment) => formatShortDate(payment.date) },
-  {
-    key: 'method',
-    header: 'Method',
-    render: (payment) => PAYMENT_METHOD_LABELS[payment.method],
-  },
-  {
-    key: 'amount',
-    header: 'Amount',
-    numeric: true,
-    render: (payment) => formatCurrency(payment.amount),
-  },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (payment) => {
-      const status = PAYMENT_STATUS_META[payment.status];
-      return <Badge tone={status.tone}>{status.label}</Badge>;
-    },
-  },
-  {
-    key: 'actions',
-    header: 'Actions',
-    actions: true,
-    render: (payment) => <RowActions subject={`payment ${payment.id}`} />,
-  },
-];
-
-function totalFor(status: PaymentStatus): { amount: number; count: number } {
-  const matching = DEMO_PAYMENTS.filter((payment) => payment.status === status);
-  return {
-    amount: matching.reduce((sum, payment) => sum + payment.amount, 0),
-    count: matching.length,
-  };
-}
+const fields = [{ name: 'orderId', label: 'Order ID' }, { name: 'customerName', label: 'Customer name' }, { name: 'method', label: 'Payment method', type: 'select' as const, options: ['cod','bank_transfer','easypaisa','jazzcash','card'].map((value) => ({ value, label: value.replace('_',' ') })) }, { name: 'amount', label: 'Amount (PKR)', type: 'number' as const }, { name: 'status', label: 'Payment status', type: 'select' as const, options: ['received','pending','overdue'].map((value) => ({ value, label: value })) }, { name: 'date', label: 'Date', type: 'date' as const }];
+const columns = [{ key: 'id', label: 'Payment ID' }, { key: 'orderId', label: 'Order' }, { key: 'customerName', label: 'Customer' }, { key: 'method', label: 'Method' }, { key: 'amount', label: 'Amount (PKR)' }, { key: 'status', label: 'Status' }, { key: 'date', label: 'Date' }];
 
 export default function PaymentsPage() {
-  const received = totalFor('received');
-  const pending = totalFor('pending');
-  const overdue = totalFor('overdue');
-
-  return (
-    <>
-      <PageHeader
-        title="Payments"
-        description="See what has been paid and what is still owed."
-        actions={
-          <ActionButton icon="plus" actionLabel="Record payment">
-            Record payment
-          </ActionButton>
-        }
-      />
-      <section className="summary-grid" aria-label="Payment summary for the sample payments">
-        <SummaryTile label="Received" value={formatCurrency(received.amount)} hint={`${received.count} sample payments`} tone="success" />
-        <SummaryTile label="Pending" value={formatCurrency(pending.amount)} hint={`${pending.count} sample payments`} tone="warning" />
-        <SummaryTile label="Overdue" value={formatCurrency(overdue.amount)} hint={`${overdue.count} sample payment`} tone="danger" />
-      </section>
-      <SamplePanel
-        title="All payments"
-        description={`${DEMO_PAYMENTS.length} made-up payments for illustration.`}
-      >
-        <DataTable
-          columns={COLUMNS}
-          rows={DEMO_PAYMENTS}
-          getRowKey={(payment) => payment.id}
-          emptyMessage="No payments yet. Recorded payments will appear here."
-        />
-      </SamplePanel>
-    </>
-  );
+  const { payments, updatePayments } = useBusinessStore();
+  const save = (values: Record<string, string | number>, id?: string) => {
+    const item: PaymentRecord = { id: id ?? makeId('PAY'), orderId: String(values.orderId), customerName: String(values.customerName), method: values.method as PaymentMethod, amount: Number(values.amount), status: values.status as PaymentStatus, date: String(values.date) };
+    updatePayments(id ? payments.map((row) => row.id === id ? item : row) : [item, ...payments]);
+  };
+  const total = (status: PaymentStatus) => payments.filter((p) => p.status === status).reduce((sum, p) => sum + p.amount, 0);
+  return <><PageHeader title="Payments" description="Record incoming payments and follow outstanding balances." /><section className="summary-grid"><SummaryTile label="Received" value={total('received').toLocaleString('en-PK')} hint="PKR" tone="success" /><SummaryTile label="Pending" value={total('pending').toLocaleString('en-PK')} hint="PKR" tone="warning" /><SummaryTile label="Overdue" value={total('overdue').toLocaleString('en-PK')} hint="PKR" tone="danger" /></section><RecordManager title="Payment register" description="Track cash on delivery, bank transfers, Easypaisa, JazzCash and card payments." createLabel="Record payment" fields={fields} columns={columns} rows={payments} onSave={save} onDelete={(id) => updatePayments(payments.filter((row) => row.id !== id))} /></>;
 }

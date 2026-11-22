@@ -1,0 +1,9 @@
+.record-manager { margin-bottom: 20px; }
+.record-form { margin: 18px 0 22px; padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg); }
+.record-form h3 { margin-bottom: 14px; font-size: 1rem; }
+.record-form__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.record-field { display: grid; gap: 5px; color: var(--color-text-muted); font-size: .85rem; font-weight: 600; }
+.record-field input, .record-field select { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); font: inherit; }
+.record-form__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.record-manager .data-table__actions { min-width: 130px; }
+.record-manager .row-actions .btn { width: auto; min-height: 32px; padding: 0 8px; font-size: .78rem; }

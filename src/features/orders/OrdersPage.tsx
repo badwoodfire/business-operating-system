@@ -1,69 +1,23 @@
-import ActionButton from '../../components/demo/ActionButton';
-import RowActions from '../../components/demo/RowActions';
-import Badge from '../../components/ui/Badge';
-import DataTable, { type DataTableColumn } from '../../components/ui/DataTable';
 import PageHeader from '../../components/ui/PageHeader';
-import SamplePanel from '../../components/ui/SamplePanel';
-import { ORDER_STATUS_META, PAYMENT_METHOD_LABELS } from '../../config/orders';
-import { DEMO_ORDERS } from '../../data/demoOrders';
-import type { Order } from '../../types';
-import { formatCurrency, formatShortDate } from '../../utils/format';
+import RecordManager from '../../components/workspace/RecordManager';
+import { makeId, useBusinessStore } from '../../store/BusinessStore';
+import type { Order, OrderStatus, PaymentMethod } from '../../types';
 
-const COLUMNS: DataTableColumn<Order>[] = [
-  { key: 'id', header: 'Order', strong: true, render: (order) => order.id },
-  { key: 'customer', header: 'Customer', render: (order) => order.customerName },
-  { key: 'date', header: 'Date', render: (order) => formatShortDate(order.date) },
-  { key: 'items', header: 'Items', numeric: true, render: (order) => order.itemCount },
-  {
-    key: 'payment',
-    header: 'Payment',
-    render: (order) => PAYMENT_METHOD_LABELS[order.paymentMethod],
-  },
-  {
-    key: 'total',
-    header: 'Total',
-    numeric: true,
-    render: (order) => formatCurrency(order.total),
-  },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (order) => {
-      const status = ORDER_STATUS_META[order.status];
-      return <Badge tone={status.tone}>{status.label}</Badge>;
-    },
-  },
-  {
-    key: 'actions',
-    header: 'Actions',
-    actions: true,
-    render: (order) => <RowActions subject={`order ${order.id}`} />,
-  },
+const fields = [
+  { name: 'customerName', label: 'Customer name' },
+  { name: 'itemCount', label: 'Number of items', type: 'number' as const },
+  { name: 'total', label: 'Order total (PKR)', type: 'number' as const },
+  { name: 'status', label: 'Order status', type: 'select' as const, options: ['pending','processing','shipped','delivered','cancelled'].map((value) => ({ value, label: value })) },
+  { name: 'paymentMethod', label: 'Payment method', type: 'select' as const, options: ['cod','bank_transfer','easypaisa','jazzcash','card'].map((value) => ({ value, label: value.replace('_',' ') })) },
+  { name: 'date', label: 'Order date', type: 'date' as const },
 ];
+const columns = [{ key: 'id', label: 'Order ID' }, { key: 'customerName', label: 'Customer' }, { key: 'date', label: 'Date' }, { key: 'itemCount', label: 'Items' }, { key: 'total', label: 'Total (PKR)' }, { key: 'status', label: 'Status' }, { key: 'paymentMethod', label: 'Payment' }];
 
 export default function OrdersPage() {
-  return (
-    <>
-      <PageHeader
-        title="Orders"
-        description="Browse customer orders and their payment and delivery status."
-        actions={
-          <ActionButton icon="plus" actionLabel="Add order">
-            Add order
-          </ActionButton>
-        }
-      />
-      <SamplePanel
-        title="All orders"
-        description={`${DEMO_ORDERS.length} made-up orders for illustration.`}
-      >
-        <DataTable
-          columns={COLUMNS}
-          rows={DEMO_ORDERS}
-          getRowKey={(order) => order.id}
-          emptyMessage="No orders yet. New orders will appear here."
-        />
-      </SamplePanel>
-    </>
-  );
+  const { orders, updateOrders } = useBusinessStore();
+  const save = (values: Record<string, string | number>, id?: string) => {
+    const item: Order = { id: id ?? makeId('ORD'), customerName: String(values.customerName), itemCount: Number(values.itemCount), total: Number(values.total), status: values.status as OrderStatus, paymentMethod: values.paymentMethod as PaymentMethod, date: String(values.date) };
+    updateOrders(id ? orders.map((row) => row.id === id ? item : row) : [item, ...orders]);
+  };
+  return <><PageHeader title="Orders" description="Create, update and track customer orders. Amounts are in PKR." /><RecordManager title="Order register" description={`${orders.length} orders saved in this browser workspace.`} createLabel="Add order" fields={fields} columns={columns} rows={orders} onSave={save} onDelete={(id) => updateOrders(orders.filter((row) => row.id !== id))} /></>;
 }
