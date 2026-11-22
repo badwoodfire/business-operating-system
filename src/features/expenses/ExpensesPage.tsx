@@ -1,89 +1,19 @@
-import ActionButton from '../../components/demo/ActionButton';
-import RowActions from '../../components/demo/RowActions';
-import Badge from '../../components/ui/Badge';
-import DataTable, { type DataTableColumn } from '../../components/ui/DataTable';
 import PageHeader from '../../components/ui/PageHeader';
-import SamplePanel from '../../components/ui/SamplePanel';
+import RecordManager from '../../components/workspace/RecordManager';
 import SummaryTile from '../../components/ui/SummaryTile';
-import { EXPENSE_CATEGORY_LABELS } from '../../config/expenses';
-import { DEMO_EXPENSES } from '../../data/demoExpenses';
+import { makeId, useBusinessStore } from '../../store/BusinessStore';
 import type { Expense, ExpenseCategory } from '../../types';
-import { formatCurrency, formatShortDate } from '../../utils/format';
 
-const COLUMNS: DataTableColumn<Expense>[] = [
-  { key: 'id', header: 'Expense', strong: true, render: (expense) => expense.id },
-  { key: 'description', header: 'Description', render: (expense) => expense.description },
-  {
-    key: 'category',
-    header: 'Category',
-    render: (expense) => <Badge>{EXPENSE_CATEGORY_LABELS[expense.category]}</Badge>,
-  },
-  { key: 'date', header: 'Date', render: (expense) => formatShortDate(expense.date) },
-  {
-    key: 'amount',
-    header: 'Amount',
-    numeric: true,
-    render: (expense) => formatCurrency(expense.amount),
-  },
-  {
-    key: 'actions',
-    header: 'Actions',
-    actions: true,
-    render: (expense) => <RowActions subject={`expense ${expense.id}`} />,
-  },
-];
-
-/** The category with the highest combined spend in the sample data. */
-function getLargestCategory(): { category: ExpenseCategory; amount: number } {
-  const totals = new Map<ExpenseCategory, number>();
-  for (const expense of DEMO_EXPENSES) {
-    totals.set(expense.category, (totals.get(expense.category) ?? 0) + expense.amount);
-  }
-  let largest: { category: ExpenseCategory; amount: number } = {
-    category: DEMO_EXPENSES[0].category,
-    amount: 0,
-  };
-  for (const [category, amount] of totals) {
-    if (amount > largest.amount) largest = { category, amount };
-  }
-  return largest;
-}
+const categories: ExpenseCategory[] = ['stock','shipping','packaging','marketing','rent','utilities','salaries'];
+const fields = [{ name: 'description', label: 'Expense description' }, { name: 'category', label: 'Category', type: 'select' as const, options: categories.map((value) => ({ value, label: value })) }, { name: 'amount', label: 'Amount (PKR)', type: 'number' as const }, { name: 'date', label: 'Date', type: 'date' as const }];
+const columns = [{ key: 'description', label: 'Description' }, { key: 'category', label: 'Category' }, { key: 'date', label: 'Date' }, { key: 'amount', label: 'Amount (PKR)' }];
 
 export default function ExpensesPage() {
-  const total = DEMO_EXPENSES.reduce((sum, expense) => sum + expense.amount, 0);
-  const largest = getLargestCategory();
-
-  return (
-    <>
-      <PageHeader
-        title="Expenses"
-        description="Track business spending and understand your costs."
-        actions={
-          <ActionButton icon="plus" actionLabel="Log expense">
-            Log expense
-          </ActionButton>
-        }
-      />
-      <section className="summary-grid" aria-label="Expense summary for the sample expenses">
-        <SummaryTile label="Total spent" value={formatCurrency(total)} hint={`${DEMO_EXPENSES.length} sample expenses`} tone="info" />
-        <SummaryTile
-          label="Biggest category"
-          value={EXPENSE_CATEGORY_LABELS[largest.category]}
-          hint={`${formatCurrency(largest.amount)} in the sample data`}
-          tone="neutral"
-        />
-      </section>
-      <SamplePanel
-        title="All expenses"
-        description={`${DEMO_EXPENSES.length} made-up expenses for illustration.`}
-      >
-        <DataTable
-          columns={COLUMNS}
-          rows={DEMO_EXPENSES}
-          getRowKey={(expense) => expense.id}
-          emptyMessage="No expenses yet. Logged expenses will appear here."
-        />
-      </SamplePanel>
-    </>
-  );
+  const { expenses, updateExpenses } = useBusinessStore();
+  const save = (values: Record<string, string | number>, id?: string) => {
+    const item: Expense = { id: id ?? makeId('EXP'), description: String(values.description), category: values.category as ExpenseCategory, amount: Number(values.amount), date: String(values.date) };
+    updateExpenses(id ? expenses.map((row) => row.id === id ? item : row) : [item, ...expenses]);
+  };
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+  return <><PageHeader title="Expenses" description="Record business spending and monitor operating costs." /><section className="summary-grid"><SummaryTile label="Total expenses" value={total.toLocaleString('en-PK')} hint="PKR across all records" tone="warning" /><SummaryTile label="Expense entries" value={String(expenses.length)} hint="saved records" /></section><RecordManager title="Expense register" description="Track stock, shipping, packaging, marketing and overhead costs." createLabel="Add expense" fields={fields} columns={columns} rows={expenses} onSave={save} onDelete={(id) => updateExpenses(expenses.filter((row) => row.id !== id))} /></>;
 }
