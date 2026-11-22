@@ -5,15 +5,9 @@ import './styles/global.css';
 import './styles/layout.css';
 import './styles/components.css';
 import './styles/demo.css';
+import './styles/workspace.css';
 
 const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Root element "#root" was not found in index.html.');
 
-if (!rootElement) {
-  throw new Error('Root element "#root" was not found in index.html.');
-}
-
-createRoot(rootElement).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+createRoot(rootElement).render(<StrictMode><App /></StrictMode>);
