@@ -14,4 +14,5 @@ export const DEMO_CUSTOMERS: Customer[] = [
   { id: 'c8', name: 'Maryam Siddiqui', city: 'Karachi', orderCount: 12, totalSpent: 101500, lastOrderDate: '2026-11-11' },
   { id: 'c9', name: 'Ali Hassan', city: 'Multan', orderCount: 4, totalSpent: 15900, lastOrderDate: '2026-11-10' },
   { id: 'c10', name: 'Zainab Qureshi', city: 'Lahore', orderCount: 7, totalSpent: 40100, lastOrderDate: '2026-11-09' },
+  { id: 'c11', name: 'Imran Sheikh', city: 'Not provided', orderCount: 1, totalSpent: 12400, lastOrderDate: '2026-11-06' },
 ];
