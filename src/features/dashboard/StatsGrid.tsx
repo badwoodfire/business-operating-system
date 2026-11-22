@@ -11,5 +11,5 @@ export default function StatsGrid() {
     { id: 'products', label: 'Products', value: products.length, format: 'number' as const, icon: 'inventory' as const, tone: 'amber' as const },
     { id: 'customers', label: 'Customers', value: customers.length, format: 'number' as const, icon: 'customers' as const, tone: 'violet' as const },
   ];
-  return <section className="stats-grid" aria-label="Key statistics">{stats.map((stat) => <StatCard key={stat.id} label={stat.label} value={stat.format === 'currency' ? formatCurrency(stat.value) : formatNumber(stat.value)} icon={stat.icon} tone={stat.tone} changePercent={0} comparisonLabel="current workspace" />)}</section>;
+  return <section className="stats-grid" aria-label="Key statistics">{stats.map((stat) => <StatCard key={stat.id} label={stat.label} value={stat.format === 'currency' ? formatCurrency(stat.value) : formatNumber(stat.value)} icon={stat.icon} tone={stat.tone} />)}</section>;
 }
