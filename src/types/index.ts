@@ -5,7 +5,21 @@ export type IconName = 'dashboard' | 'orders' | 'inventory' | 'customers' | 'pay
 export interface NavItem { id: ModuleId; label: string; icon: IconName; description: string; plannedFeatures: string[]; }
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'cod' | 'bank_transfer' | 'easypaisa' | 'jazzcash' | 'card';
-export interface Order { id: string; customerName: string; itemCount: number; total: number; status: OrderStatus; paymentMethod: PaymentMethod; date: string; }
+export interface Order {
+  id: string;
+  customerName: string;
+  /** Inventory product selected for this order. Optional for older demo/backup records. */
+  productId?: string;
+  /** Product name snapshot, retained even if the catalogue entry changes later. */
+  productName?: string;
+  /** Quantity of the selected product. Optional for older demo/backup records. */
+  quantity?: number;
+  itemCount: number;
+  total: number;
+  status: OrderStatus;
+  paymentMethod: PaymentMethod;
+  date: string;
+}
 export type StatFormat = 'currency' | 'number';
 export type Tone = 'blue' | 'green' | 'amber' | 'violet';
 export interface DashboardStat { id: string; label: string; value: number; format: StatFormat; changePercent: number; comparisonLabel: string; icon: IconName; tone: Tone; }

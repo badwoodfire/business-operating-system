@@ -1,6 +1,13 @@
 import { useState, type FormEvent } from 'react';
 
-export interface RecordField { name: string; label: string; type?: 'text' | 'number' | 'date' | 'select'; required?: boolean; options?: { value: string; label: string }[]; }
+export interface RecordField {
+  name: string;
+  label: string;
+  type?: 'text' | 'number' | 'date' | 'select' | 'computed';
+  required?: boolean;
+  options?: { value: string; label: string }[];
+  compute?: (values: Record<string, string>) => string;
+}
 export interface RecordColumn { key: string; label: string; }
 export type ManagedRecord = { id: string };
 
@@ -23,7 +30,10 @@ export default function RecordManager<T extends ManagedRecord>({ title, descript
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const result: Record<string, string | number> = {};
-    for (const field of fields) { const value = values[field.name] ?? ''; result[field.name] = field.type === 'number' ? Number(value) : value; }
+    for (const field of fields) {
+      const value = values[field.name] ?? '';
+      result[field.name] = field.type === 'number' ? Number(value) : field.type === 'computed' ? (field.compute?.(values) ?? '') : value;
+    }
     onSave(result, editing); setOpen(false); setEditing(undefined);
   };
   return <section className="panel record-manager">
@@ -31,7 +41,7 @@ export default function RecordManager<T extends ManagedRecord>({ title, descript
     {open && <form className="record-form" onSubmit={submit}>
       <h3>{editing ? 'Edit record' : createLabel}</h3>
       <div className="record-form__grid">{fields.map((field) => <label className="record-field" key={field.name}><span>{field.label}</span>
-        {field.type === 'select' ? <select required={field.required !== false} value={values[field.name] ?? ''} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))}><option value="">Choose…</option>{(field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={field.required !== false} type={field.type ?? 'text'} min={field.type === 'number' ? 0 : undefined} step={field.type === 'number' ? 'any' : undefined} value={values[field.name] ?? ''} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))} />}
+        {field.type === 'select' ? <select required={field.required !== false} value={values[field.name] ?? ''} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))}><option value="">Choose…</option>{(field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : field.type === 'computed' ? <input type="text" readOnly value={field.compute?.(values) ?? ''} aria-label={field.label} /> : <input required={field.required !== false} type={field.type ?? 'text'} min={field.type === 'number' ? 0 : undefined} step={field.type === 'number' ? 'any' : undefined} value={values[field.name] ?? ''} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))} />}
       </label>)}</div>
       <div className="record-form__actions"><button className="btn btn--primary" type="submit">{editing ? 'Save changes' : 'Save record'}</button><button className="btn btn--secondary" type="button" onClick={() => setOpen(false)}>Cancel</button></div>
     </form>}
