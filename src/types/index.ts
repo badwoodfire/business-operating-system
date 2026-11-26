@@ -5,9 +5,19 @@ export type IconName = 'dashboard' | 'orders' | 'inventory' | 'customers' | 'pay
 export interface NavItem { id: ModuleId; label: string; icon: IconName; description: string; plannedFeatures: string[]; }
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'cod' | 'bank_transfer' | 'easypaisa' | 'jazzcash' | 'card';
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
 export interface Order {
   id: string;
   customerName: string;
+  /** Line items for multi-product orders. Optional for older demo/backup records. */
+  items?: OrderItem[];
+  /** Legacy single-product fields retained for older demo/backup records. */
   /** Inventory product selected for this order. Optional for older demo/backup records. */
   productId?: string;
   /** Product name snapshot, retained even if the catalogue entry changes later. */
