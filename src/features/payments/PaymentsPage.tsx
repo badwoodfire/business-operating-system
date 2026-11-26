@@ -83,6 +83,7 @@ export default function PaymentsPage() {
       amount,
       status,
       date: String(values.date),
+      source: payments.find((payment) => payment.id === id)?.source ?? 'manual',
     };
 
     updatePayments(id ? payments.map((row) => row.id === id ? item : row) : [item, ...payments]);
