@@ -205,7 +205,7 @@ export default function OrdersPage() {
         <div className="record-form__actions"><button className="btn btn--primary" type="submit"> {editing ? 'Save changes' : 'Save order'}</button><button className="btn btn--secondary" type="button" onClick={() => setOpen(false)}>Cancel</button></div>
       </form>}
       {orders.length === 0 ? <p className="empty-state">No orders yet. Add your first one above.</p> : <div className="table-scroll"><table className="data-table"><thead><tr>{columns.map((column) => <th key={column.key}>{column.label}</th>)}<th>Actions</th></tr></thead><tbody>{orders.map((order) => {
-        const record: Record<string, string | number> = {
+        const record: Record<string, unknown> = {
           ...order,
           productSummary: getOrderItems(order).map((item) => `${item.productName} × ${item.quantity}`).join(', ') || order.productName || '—',
         };
