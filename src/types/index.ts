@@ -28,7 +28,7 @@ export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock';
 export interface Product { id: string; name: string; sku: string; category: string; price: number; stock: number; reorderLevel: number; }
 export interface Customer { id: string; name: string; city: string; orderCount: number; totalSpent: number; lastOrderDate: string; }
 export type PaymentStatus = 'received' | 'pending' | 'overdue';
-export interface PaymentRecord { id: string; orderId: string; customerName: string; method: PaymentMethod; amount: number; status: PaymentStatus; date: string; }
+export interface PaymentRecord { id: string; orderId: string; customerName: string; method: PaymentMethod; amount: number; status: PaymentStatus; date: string; /** Marks the outstanding-balance record generated when an order is saved. */ source?: 'order' | 'manual'; }
 export type ExpenseCategory = 'stock' | 'shipping' | 'packaging' | 'marketing' | 'rent' | 'utilities' | 'salaries';
 export interface Expense { id: string; description: string; category: ExpenseCategory; amount: number; date: string; }
 export interface MonthlySales { id: string; label: string; total: number; }
