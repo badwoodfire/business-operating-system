@@ -15,7 +15,7 @@ const columns = [
 ];
 
 export default function OrdersPage() {
-  const { orders, products, updateOrders, updateProducts } = useBusinessStore();
+  const { orders, products, payments, updateOrders, updateProducts, updatePayments } = useBusinessStore();
 
   const fields: RecordField[] = [
     { name: 'customerName', label: 'Customer name' },
@@ -101,8 +101,33 @@ export default function OrdersPage() {
       date: String(values.date),
     };
 
+    // Keep an order-linked pending payment in sync with the order total.
+    // Received payments are preserved; only the outstanding balance is generated.
+    const receivedTotal = payments
+      .filter((payment) => payment.orderId === item.id && payment.status === 'received')
+      .reduce((sum, payment) => sum + payment.amount, 0);
+    const outstanding = Math.max(0, item.total - receivedTotal);
+    const linkedPending = payments.find(
+      (payment) => payment.orderId === item.id && payment.source === 'order' && payment.status !== 'received',
+    );
+
+    let nextPayments = payments.filter((payment) => payment.id !== linkedPending?.id);
+    if (outstanding > 0) {
+      nextPayments = [{
+        id: linkedPending?.id ?? makeId('PAY'),
+        orderId: item.id,
+        customerName: item.customerName,
+        method: item.paymentMethod,
+        amount: outstanding,
+        status: 'pending',
+        date: item.date,
+        source: 'order',
+      }, ...nextPayments];
+    }
+
     updateProducts(nextProducts);
     updateOrders(id ? orders.map((row) => row.id === id ? item : row) : [item, ...orders]);
+    updatePayments(nextPayments);
   };
 
   const remove = (id: string) => {
